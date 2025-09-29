@@ -1,27 +1,44 @@
 <template>
-  <header class="app-header">
-    <div class="container">
-      <div class="header-content">
-        <div class="logo">
-          <img src="/polgo-logo-header.png" alt="Polgo" class="logo-image" />
+  <header class="fixed top-0 left-0 right-0 bg-white/[0.98] backdrop-blur-[15px] border-b border-polgo-purple/10 z-[1000] transition-all duration-300 shadow-lg shadow-polgo-purple/[0.08]">
+    <div class="w-full max-w-[2200px] mx-auto px-16 xl:max-w-[1600px] xl:px-12 lg:max-w-[1200px] lg:px-8 md:max-w-3xl md:px-8 sm:max-w-xl sm:px-6 xs:px-4">
+      <div class="flex justify-between items-center h-[70px] lg:h-20">
+        <div class="flex-shrink-0">
+          <img src="/polgo-logo-header.png" alt="Polgo" class="h-10 lg:h-9 w-auto object-contain" />
         </div>
-        <nav class="navigation">
-          <ul>
+        <nav class="hidden md:block">
+          <ul class="flex space-x-8 lg:space-x-10 xl:space-x-12 list-none m-0 p-0">
             <li v-for="item in navigationItems" :key="item.name">
-              <a :href="item.href" @click.prevent="scrollToSection(item.href)">
+              <a
+                :href="item.href"
+                @click.prevent="scrollToSection(item.href)"
+                class="relative no-underline text-polgo-gray-medium font-medium transition-all duration-300 hover:text-polgo-purple cursor-pointer group lg:text-base after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:border-gradient after:transition-all after:duration-300 group-hover:after:w-full"
+              >
                 {{ item.name }}
               </a>
             </li>
           </ul>
         </nav>
-        <div class="auth-buttons">
-          <button class="btn-login">Login</button>
-          <button class="btn-register">Cadastrar</button>
+        <div class="hidden md:flex items-center space-x-4 lg:space-x-5">
+          <RouterLink
+            to="/dashboard"
+            class="px-4 py-2 bg-transparent border border-polgo-blue text-polgo-blue font-medium rounded-md transition-all duration-300 hover:bg-polgo-blue hover:text-white hover:shadow-lg hover:shadow-polgo-blue/30"
+          >
+            Login
+          </RouterLink>
+          <RouterLink
+            to="/dashboard"
+            class="px-4 py-2 bg-polgo-gradient border border-polgo-purple text-white font-medium rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-polgo-purple/30"
+          >
+            Cadastrar
+          </RouterLink>
         </div>
-        <button class="menu-toggle" @click="toggleMobileMenu">
-          <span></span>
-          <span></span>
-          <span></span>
+        <button
+          class="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1 bg-transparent border-0 cursor-pointer p-2"
+          @click="toggleMobileMenu"
+        >
+          <span class="block w-6 h-0.5 bg-gray-600 transition-all duration-300"></span>
+          <span class="block w-6 h-0.5 bg-gray-600 transition-all duration-300"></span>
+          <span class="block w-6 h-0.5 bg-gray-600 transition-all duration-300"></span>
         </button>
       </div>
     </div>
@@ -57,205 +74,16 @@ const toggleMobileMenu = () => {
 </script>
 
 <style scoped>
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(123, 60, 240, 0.1);
-  z-index: 1000;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 20px rgba(123, 60, 240, 0.08);
-}
-
-.container {
-  width: 100%;
-  max-width: 2200px;
-  margin: 0 auto;
-  padding: 0 4rem;
-}
-
-@media (max-width: 1535px) {
-  .container {
-    max-width: 1600px;
-    padding: 0 3rem;
-  }
-}
-
-@media (max-width: 1279px) {
-  .container {
-    max-width: 1200px;
-    padding: 0 2rem;
-  }
-}
-
-@media (max-width: 1023px) {
-  .container {
-    max-width: 768px;
-    padding: 0 2rem;
-  }
-}
-
-@media (max-width: 767px) {
-  .container {
-    max-width: 640px;
-    padding: 0 1.5rem;
-  }
-}
-
-@media (max-width: 639px) {
-  .container {
-    padding: 0 1rem;
-  }
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 70px;
-}
-
-.logo-image {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-
-.navigation ul {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 2rem;
-}
-
-.navigation a {
-  text-decoration: none;
-  color: var(--polgo-gray-medium);
-  font-weight: 500;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-}
-
-.navigation a:hover {
-  color: var(--polgo-purple);
-}
-
-.navigation a::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--polgo-purple), var(--polgo-blue));
-  transition: width 0.3s ease;
-}
-
-.navigation a:hover::after {
-  width: 100%;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.btn-login, .btn-register {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-}
-
-.btn-login {
-  background: transparent;
-  border: 1px solid var(--polgo-blue);
-  color: var(--polgo-blue);
-}
-
-.btn-login:hover {
-  background: var(--polgo-blue);
-  color: var(--polgo-white);
-  box-shadow: 0 2px 10px rgba(31, 182, 255, 0.3);
-}
-
-.btn-register {
+/* Only keeping gradients that can't be replicated with Tailwind */
+.bg-polgo-gradient {
   background: linear-gradient(135deg, var(--polgo-purple), var(--polgo-purple-dark));
-  border: 1px solid var(--polgo-purple);
-  color: var(--polgo-white);
 }
 
-.btn-register:hover {
+.bg-polgo-gradient:hover {
   background: linear-gradient(135deg, var(--polgo-purple-dark), var(--polgo-purple));
-  box-shadow: 0 2px 10px rgba(123, 60, 240, 0.3);
 }
 
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: #4a5568;
-  margin: 3px 0;
-  transition: 0.3s;
-}
-
-/* Desktop optimizations */
-@media (min-width: 1024px) {
-  .header-content {
-    height: 80px;
-  }
-
-  .navigation ul {
-    gap: 2.5rem;
-  }
-
-  .navigation a {
-    font-size: 1rem;
-  }
-
-  .logo-image {
-    height: 35px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .navigation ul {
-    gap: 3rem;
-  }
-
-  .auth-buttons {
-    gap: 1.25rem;
-  }
-}
-
-/* Mobile breakpoint */
-@media (max-width: 768px) {
-  .navigation {
-    display: none;
-  }
-
-  .auth-buttons {
-    display: none;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
+.border-gradient::after {
+  background: linear-gradient(90deg, var(--polgo-purple), var(--polgo-blue));
 }
 </style>

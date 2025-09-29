@@ -55,7 +55,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const countdown = ref('00:00:00')
-let interval: NodeJS.Timeout
+let interval: number
 
 const updateCountdown = () => {
   const nextDraw = new Date()
