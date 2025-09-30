@@ -9,7 +9,7 @@ export class LoadWinnersController implements Controller {
     this.loadWinners = loadWinners
   }
 
-  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(_httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const winners = await this.loadWinners.loadAll()
       return ok(winners)

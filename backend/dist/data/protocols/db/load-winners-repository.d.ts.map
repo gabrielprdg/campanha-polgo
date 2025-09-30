@@ -1,0 +1,1 @@
+{"version":3,"file":"load-winners-repository.d.ts","sourceRoot":"","sources":["../../../../src/data/protocols/db/load-winners-repository.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA;AAE3D,MAAM,WAAW,qBAAqB;IACpC,OAAO,EAAE,MAAM,OAAO,CAAC,WAAW,EAAE,CAAC,CAAA;CACtC"}

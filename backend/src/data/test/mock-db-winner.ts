@@ -7,7 +7,7 @@ import { mockWinnerModel } from '../../domain/test/mock-winner'
 
 export const mockAddWinnerRepository = (): AddWinnerRepository => {
   class AddWinnerRepositoryStub implements AddWinnerRepository {
-    async add(winnerData: any): Promise<any> {
+    async add(_winnerData: any): Promise<any> {
       return mockWinnerModel()
     }
   }
@@ -25,7 +25,7 @@ export const mockLoadWinnersRepository = (): LoadWinnersRepository => {
 
 export const mockLoadWinnerByIdRepository = (): LoadWinnerByIdRepository => {
   class LoadWinnerByIdRepositoryStub implements LoadWinnerByIdRepository {
-    async loadById(id: string): Promise<any> {
+    async loadById(_id: string): Promise<any> {
       return mockWinnerModel()
     }
   }
@@ -34,7 +34,7 @@ export const mockLoadWinnerByIdRepository = (): LoadWinnerByIdRepository => {
 
 export const mockUpdateWinnerByIdRepository = (): UpdateWinnerByIdRepository => {
   class UpdateWinnerByIdRepositoryStub implements UpdateWinnerByIdRepository {
-    async update(id: string, winnerData: any): Promise<void> {
+    async update(_id: string, _winnerData: any): Promise<void> {
       return Promise.resolve()
     }
   }
@@ -43,7 +43,7 @@ export const mockUpdateWinnerByIdRepository = (): UpdateWinnerByIdRepository => 
 
 export const mockDeleteWinnerByIdRepository = (): DeleteWinnerByIdRepository => {
   class DeleteWinnerByIdRepositoryStub implements DeleteWinnerByIdRepository {
-    async deleteById(id: string): Promise<void> {
+    async deleteById(_id: string): Promise<void> {
       return Promise.resolve()
     }
   }

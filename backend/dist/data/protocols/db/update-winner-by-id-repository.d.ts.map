@@ -1,0 +1,1 @@
+{"version":3,"file":"update-winner-by-id-repository.d.ts","sourceRoot":"","sources":["../../../../src/data/protocols/db/update-winner-by-id-repository.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,sDAAsD,CAAA;AAEzF,MAAM,WAAW,0BAA0B;IACzC,MAAM,EAAE,CAAC,EAAE,EAAE,MAAM,EAAE,UAAU,EAAE,kBAAkB,KAAK,OAAO,CAAC,IAAI,CAAC,CAAA;CACtE"}

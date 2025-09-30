@@ -17,16 +17,24 @@ export class WinnerMongoRepository
     DeleteWinnerByIdRepository
 {
   private mapToModel(winnerDoc: WinnerDocument): WinnerModel {
-    return {
+    const model: WinnerModel = {
       id: winnerDoc._id.toString(),
       name: winnerDoc.name,
       state: winnerDoc.state,
       city: winnerDoc.city,
       prize: winnerDoc.prize,
-      date: winnerDoc.date,
-      created_at: winnerDoc.created_at,
-      updated_at: winnerDoc.updated_at
+      date: winnerDoc.date
     }
+
+    if (winnerDoc.created_at) {
+      model.created_at = winnerDoc.created_at
+    }
+
+    if (winnerDoc.updated_at) {
+      model.updated_at = winnerDoc.updated_at
+    }
+
+    return model
   }
 
   async add(winnerData: AddWinnerParams): Promise<WinnerModel> {

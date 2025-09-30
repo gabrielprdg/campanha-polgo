@@ -9,7 +9,7 @@ export class DbLoadWinnerById implements LoadWinnerById {
     this.loadWinnerByIdRepository = loadWinnerByIdRepository
   }
 
-  async loadById (id: string): Promise<WinnerModel> {
+  async loadById (id: string): Promise<WinnerModel | null> {
     const winner = await this.loadWinnerByIdRepository.loadById(id)
     return winner
   }

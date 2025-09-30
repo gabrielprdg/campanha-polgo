@@ -1,0 +1,1 @@
+{"version":3,"file":"delete-winner-by-id.d.ts","sourceRoot":"","sources":["../../../../src/domain/use-cases/winner/delete-winner-by-id.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,gBAAgB;IAC/B,UAAU,EAAE,CAAC,EAAE,EAAE,MAAM,KAAK,OAAO,CAAC,IAAI,CAAC,CAAA;CAC1C"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"http.d.ts","sourceRoot":"","sources":["../../../src/presentation/protocols/http.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,WAAW;IAC1B,IAAI,CAAC,EAAE,GAAG,CAAA;IACV,MAAM,CAAC,EAAE,GAAG,CAAA;IACZ,KAAK,CAAC,EAAE,GAAG,CAAA;IACX,OAAO,CAAC,EAAE,GAAG,CAAA;CACd;AAED,MAAM,WAAW,YAAY;IAC3B,UAAU,EAAE,MAAM,CAAA;IAClB,IAAI,EAAE,GAAG,CAAA;CACV"}
