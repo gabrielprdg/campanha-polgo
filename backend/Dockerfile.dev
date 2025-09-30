@@ -1,0 +1,11 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies as root to avoid permission issues
+COPY package*.json ./
+
+EXPOSE 3000
+
+# Development mode - we'll run npm install in docker-compose command
+CMD ["npm", "run", "dev"]
