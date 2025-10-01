@@ -21,9 +21,7 @@ class MongoHelper {
                 autoIndex: environment_1.isDevelopment,
                 maxPoolSize: 10,
                 serverSelectionTimeoutMS: 5000,
-                socketTimeoutMS: 45000,
-                bufferCommands: false,
-                bufferMaxEntries: 0
+                socketTimeoutMS: 45000
             };
             await mongoose_1.default.connect(environment_1.config.mongodbUri, options);
             console.log('✅ Connected to MongoDB successfully');

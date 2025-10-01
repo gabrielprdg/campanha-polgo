@@ -43,7 +43,7 @@ exports.default = (app) => {
     const router = (0, express_1.Router)();
     app.use('/api/v1', router);
     (0, fs_1.readdirSync)(path_1.default.join(__dirname, '/../routes')).map(async (file) => {
-        if (!file.includes('.test.') && !file.endsWith('.map')) {
+        if (!file.includes('.test.') && !file.endsWith('.map') && !file.endsWith('.d.ts') && file.endsWith('.js')) {
             (await Promise.resolve(`${`../routes/${file}`}`).then(s => __importStar(require(s)))).default(router);
         }
     });
