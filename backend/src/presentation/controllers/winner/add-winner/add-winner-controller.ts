@@ -30,6 +30,7 @@ export class AddWinnerController implements Controller {
 
       return created(winner)
     } catch (err: any) {
+      console.log('err', err)
       return serverError(err)
     }
   }

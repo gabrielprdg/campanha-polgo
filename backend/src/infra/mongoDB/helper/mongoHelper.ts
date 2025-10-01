@@ -21,9 +21,7 @@ export class MongoHelper {
         autoIndex: isDevelopment,
         maxPoolSize: 10,
         serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-        bufferCommands: false,
-        bufferMaxEntries: 0
+        socketTimeoutMS: 45000
       };
 
       await mongoose.connect(config.mongodbUri, options);
