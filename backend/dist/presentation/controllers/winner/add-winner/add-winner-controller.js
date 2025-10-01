@@ -24,7 +24,6 @@ class AddWinnerController {
             return (0, http_helper_1.created)(winner);
         }
         catch (err) {
-            console.log('err', err);
             return (0, http_helper_1.serverError)(err);
         }
     }

@@ -23,8 +23,9 @@ describe('DbAddWinner Usecase', () => {
   it('Should call AddWinnerRepository with correct values', async () => {
     const { sut, addWinnerRepositoryStub } = makeSut()
     const addSpy = jest.spyOn(addWinnerRepositoryStub, 'add')
-    await sut.add(mockAddWinnerParams())
-    expect(addSpy).toHaveBeenCalledWith(mockAddWinnerParams())
+    const winnerParams = mockAddWinnerParams()
+    await sut.add(winnerParams)
+    expect(addSpy).toHaveBeenCalledWith(winnerParams)
   })
 
   it('Should return a Winner on success', async () => {

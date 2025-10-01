@@ -10,9 +10,7 @@ const adaptRoute = (controller) => {
                 params: req.params,
                 query: req.query
             };
-            console.log('https', httpRequest);
             const httpResponse = await controller.handle(httpRequest);
-            console.log('rs', httpResponse);
             if (httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299) {
                 res.status(httpResponse.statusCode).json(httpResponse.body);
             }

@@ -1,0 +1,85 @@
+import request from 'supertest'
+import app from '../config/app'
+import { mongoHelper } from '../../infra/mongoDB/helper/mongoHelper'
+import { WinnerMongoModel } from '../../infra/mongoDB/winner/winner-schema'
+
+describe('Winner Routes', () => {
+  beforeAll(async () => {
+    await mongoHelper.connect()
+  })
+
+  afterAll(async () => {
+    await mongoHelper.disconnect()
+  })
+
+  beforeEach(async () => {
+    await WinnerMongoModel.deleteMany({})
+  })
+
+  describe('POST /winners', () => {
+    test('Should return 204 on add winner', async () => {
+      await request(app)
+        .post('/api/v1/winners')
+        .send({
+          name: 'any_name',
+          state: 'any_state',
+          city: 'any_city',
+          prize: 'any_prize',
+          date: new Date()
+        })
+        .expect(201)
+    })
+  })
+
+  describe('GET /winners', () => {
+    test('Should return 200 on load winners', async () => {
+      await WinnerMongoModel.create({
+        name: 'any_name',
+        state: 'any_state',
+        city: 'any_city',
+        prize: 'any_prize',
+        date: new Date()
+      })
+
+      await request(app)
+        .get('/api/v1/winners')
+        .expect(200)
+    })
+  })
+
+  describe('PATCH /winners/:id', () => {
+    test('Should return 200 on update winner by Id', async () => {
+      const winner = await WinnerMongoModel.create({
+        name: 'any_name',
+        state: 'any_state',
+        city: 'any_city',
+        prize: 'any_prize',
+        date: new Date()
+      })
+
+      await request(app)
+        .patch(`/api/v1/winners/${winner._id.toString()}`)
+        .send({
+          name: 'updated_name',
+          state: 'updated_state'
+        })
+        .expect(204)
+    })
+  })
+
+  describe('DELETE /winners/:id', () => {
+    test('Should return 204 on delete winner by Id', async () => {
+      const winner = await WinnerMongoModel.create({
+        name: 'any_name',
+        state: 'any_state',
+        city: 'any_city',
+        prize: 'any_prize',
+        date: new Date()
+      })
+
+      await request(app)
+        .delete(`/api/v1/winners/${winner._id.toString()}`)
+        .expect(204)
+    })
+  })
+})
