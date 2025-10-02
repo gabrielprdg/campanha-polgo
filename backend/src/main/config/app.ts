@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import compression from 'compression'
 import setupRoutes from './routes'
+import setupSwagger from './config-swagger'
 
 const app = express()
 
@@ -20,6 +21,9 @@ app.use(express.urlencoded({ extended: true }))
 
 // Compression
 app.use(compression())
+
+// Swagger documentation
+setupSwagger(app)
 
 // Routes
 setupRoutes(app)
