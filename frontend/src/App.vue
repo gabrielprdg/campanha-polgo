@@ -1,12 +1,7 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
-import HomeSection from './components/sections/HomeSection.vue'
-import HowToParticipateSection from './components/sections/HowToParticipateSection.vue'
-import PrizesSection from './components/sections/PrizesSection.vue'
-import FaqSection from './components/sections/FaqSection.vue'
-import WinnersSection from './components/sections/WinnersSection.vue'
-import StoresSection from './components/sections/StoresSection.vue'
 </script>
 
 
@@ -14,12 +9,7 @@ import StoresSection from './components/sections/StoresSection.vue'
  <div class="app">
    <AppHeader />
    <main class="main-content">
-     <HomeSection />
-     <HowToParticipateSection />
-     <PrizesSection />
-     <FaqSection />
-     <WinnersSection />
-     <StoresSection />
+     <RouterView />
    </main>
    <AppFooter />
  </div>

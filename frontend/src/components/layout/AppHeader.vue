@@ -2,7 +2,7 @@
   <header class="app-header">
     <div class="container">
       <div class="header-content">
-        <div class="logo">
+        <div class="logo" @click="navigateToHome" style="cursor: pointer;">
           <img src="/polgo-logo-header.png" alt="Polgo" class="logo-image" />
         </div>
         <nav class="navigation">
@@ -15,8 +15,8 @@
           </ul>
         </nav>
         <div class="auth-buttons">
-          <button class="btn-login">Login</button>
-          <button class="btn-register">Cadastrar</button>
+          <button class="btn-login" @click="navigateToDashboard">Login</button>
+          <button class="btn-register" @click="navigateToDashboard">Cadastrar</button>
         </div>
         <button class="menu-toggle" @click="toggleMobileMenu">
           <span></span>
@@ -30,7 +30,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { NavigationItem } from '@/types'
+
+const router = useRouter()
 
 const navigationItems: NavigationItem[] = [
   { name: 'Início', href: '#home' },
@@ -53,6 +56,14 @@ const scrollToSection = (href: string) => {
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const navigateToDashboard = () => {
+  router.push('/dashboard')
+}
+
+const navigateToHome = () => {
+  router.push('/')
 }
 </script>
 
