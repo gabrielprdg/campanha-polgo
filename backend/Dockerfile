@@ -1,19 +1,14 @@
-FROM node:18-alpine
+FROM node:22
+WORKDIR /usr/src/campanha-polgo
 
-WORKDIR /app
+COPY ./package.json .
 
-COPY package*.json ./
-
-RUN npm ci
+RUN npm install
 
 COPY . .
 
-RUN npm run build && npm prune --omit=dev
-
-RUN chown -R node:node /app
+RUN npm run build
 
 EXPOSE 3000
-
-USER node
 
 CMD ["npm", "start"]

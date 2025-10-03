@@ -1,16 +1,10 @@
-import { LoadStores } from '../../../../domain/use-cases/store/load-stores'
 import { throwError } from '../../../../data/test/test-helper'
 import { mockStoreModel } from '../../../../domain/test/mock-store'
+import { LoadStores } from '../../../../domain/use-cases/store/load-stores'
 import { ok, serverError } from '../../../helpers/http/http-helper'
 import { mockLoadStores } from '../../../test'
-import { HttpRequest } from '../../../protocols'
 import { LoadStoresController } from './load-stores-controller'
 
-const makeFakeRequest = (): HttpRequest => ({
-  body: {},
-  params: {},
-  query: {}
-})
 
 type SutTypes = {
   sut: LoadStoresController
@@ -31,20 +25,20 @@ describe('LoadStores Controller', () => {
   test('Should call LoadStores', async () => {
     const { sut, loadStoresStub } = makeSut()
     const loadAllSpy = jest.spyOn(loadStoresStub, 'loadAll')
-    await sut.handle(makeFakeRequest())
+    await sut.handle()
     expect(loadAllSpy).toHaveBeenCalled()
   })
 
   test('Should return 500 if LoadStores throws', async () => {
     const { sut, loadStoresStub } = makeSut()
     jest.spyOn(loadStoresStub, 'loadAll').mockImplementationOnce(throwError)
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle()
     expect(httpResponse).toEqual(serverError(new Error()))
   })
 
   test('Should return 200 with stores list on success', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle()
     expect(httpResponse).toEqual(ok([mockStoreModel(), mockStoreModel()]))
   })
 })

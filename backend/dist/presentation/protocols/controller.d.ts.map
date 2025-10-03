@@ -1,1 +1,0 @@
-{"version":3,"file":"controller.d.ts","sourceRoot":"","sources":["../../../src/presentation/protocols/controller.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,YAAY,EAAE,MAAM,QAAQ,CAAA;AAElD,MAAM,WAAW,UAAU;IACzB,MAAM,EAAE,CAAC,WAAW,EAAE,WAAW,KAAK,OAAO,CAAC,YAAY,CAAC,CAAA;CAC5D"}

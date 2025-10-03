@@ -1,6 +1,6 @@
 import { LoadWinners } from '../../../../domain/use-cases/winner/load-winners'
 import { ok, serverError } from '../../../helpers/http/http-helper'
-import { Controller, HttpRequest, HttpResponse } from '../../../protocols'
+import { Controller, HttpResponse } from '../../../protocols'
 
 export class LoadWinnersController implements Controller {
   private readonly loadWinners: LoadWinners
@@ -9,7 +9,7 @@ export class LoadWinnersController implements Controller {
     this.loadWinners = loadWinners
   }
 
-  async handle(_httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(): Promise<HttpResponse> {
     try {
       const winners = await this.loadWinners.loadAll()
       return ok(winners)

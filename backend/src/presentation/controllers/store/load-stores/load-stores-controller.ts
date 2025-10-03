@@ -1,6 +1,6 @@
 import { LoadStores } from '../../../../domain/use-cases/store/load-stores'
 import { ok, serverError } from '../../../helpers/http/http-helper'
-import { Controller, HttpRequest, HttpResponse } from '../../../protocols'
+import { Controller, HttpResponse } from '../../../protocols'
 
 export class LoadStoresController implements Controller {
   private readonly loadStores: LoadStores
@@ -9,7 +9,7 @@ export class LoadStoresController implements Controller {
     this.loadStores = loadStores
   }
 
-  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(): Promise<HttpResponse> {
     try {
       const stores = await this.loadStores.loadAll()
       return ok(stores)

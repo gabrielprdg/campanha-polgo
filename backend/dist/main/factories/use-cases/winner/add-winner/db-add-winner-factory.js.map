@@ -1,1 +1,0 @@
-{"version":3,"file":"db-add-winner-factory.js","sourceRoot":"","sources":["../../../../../../src/main/factories/use-cases/winner/add-winner/db-add-winner-factory.ts"],"names":[],"mappings":";;;AAAA,6FAA6F;AAC7F,iGAA2F;AAEpF,MAAM,eAAe,GAAG,GAAgB,EAAE;IAC/C,MAAM,qBAAqB,GAAG,IAAI,yCAAqB,EAAE,CAAA;IACzD,OAAO,IAAI,2BAAW,CAAC,qBAAqB,CAAC,CAAA;AAC/C,CAAC,CAAA;AAHY,QAAA,eAAe,mBAG3B"}

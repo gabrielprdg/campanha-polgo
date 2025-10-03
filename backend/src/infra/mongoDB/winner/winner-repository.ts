@@ -3,6 +3,7 @@ import { LoadWinnersRepository } from '../../../data/protocols/db/load-winners-r
 import { LoadWinnerByIdRepository } from '../../../data/protocols/db/load-winner-by-id-repository'
 import { UpdateWinnerByIdRepository } from '../../../data/protocols/db/update-winner-by-id-repository'
 import { DeleteWinnerByIdRepository } from '../../../data/protocols/db/delete-winner-by-id-repository'
+import { LoadWinnersAggregationRepository, WinnerAggregationByState } from '../../../data/protocols/db/load-winners-aggregation-repository'
 import { WinnerModel } from '../../../domain/models/winner'
 import { AddWinnerParams } from '../../../domain/use-cases/winner/add-winner'
 import { UpdateWinnerParams } from '../../../domain/use-cases/winner/update-winner-by-id'
@@ -14,7 +15,8 @@ export class WinnerMongoRepository
     LoadWinnersRepository,
     LoadWinnerByIdRepository,
     UpdateWinnerByIdRepository,
-    DeleteWinnerByIdRepository
+    DeleteWinnerByIdRepository,
+    LoadWinnersAggregationRepository
 {
   private mapToModel(winnerDoc: WinnerDocument): WinnerModel {
     const model: WinnerModel = {
@@ -58,5 +60,27 @@ export class WinnerMongoRepository
 
   async deleteById(id: string): Promise<void> {
     await WinnerMongoModel.findByIdAndDelete(id)
+  }
+
+  async loadAggregationByState(): Promise<WinnerAggregationByState[]> {
+    const aggregation = await WinnerMongoModel.aggregate([
+      {
+        $group: {
+          _id: '$state',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          state: '$_id',
+          count: 1
+        }
+      },
+      {
+        $sort: { state: 1 }
+      }
+    ])
+    return aggregation
   }
 }

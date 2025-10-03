@@ -1,1 +1,0 @@
-{"version":3,"file":"load-winner-by-id-repository.d.ts","sourceRoot":"","sources":["../../../../src/data/protocols/db/load-winner-by-id-repository.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA;AAE3D,MAAM,WAAW,wBAAwB;IACvC,QAAQ,EAAE,CAAC,EAAE,EAAE,MAAM,KAAK,OAAO,CAAC,WAAW,GAAG,IAAI,CAAC,CAAA;CACtD"}
