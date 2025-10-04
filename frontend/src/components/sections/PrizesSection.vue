@@ -156,7 +156,7 @@ const categories = ref<Category[]>([
         description: 'O smartphone mais avançado da Apple com tecnologia de ponta',
         value: 'R$ 8.999',
         frequency: 'Semanal',
-        image: 'https://via.placeholder.com/300x200/667eea/ffffff?text=iPhone+15+Pro',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXfSszg4IlFOjP1rLVh92VO2uKWLYrmQUyOQ&s',
         featured: true,
         odds: '1 em 50.000',
         specs: ['128GB de armazenamento', 'Camera 48MP', 'Tela Super Retina XDR', 'Chip A17 Pro']
@@ -167,7 +167,7 @@ const categories = ref<Category[]>([
         description: 'Console de videogame de última geração',
         value: 'R$ 4.999',
         frequency: 'Quinzenal',
-        image: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=PlayStation+5',
+        image: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/2c0fa2e1-ec30-4ff2-95fb-92230e028788.__CR0,0,970,600_PT0_SX970_V1___.jpg',
         odds: '1 em 25.000',
         specs: ['SSD 825GB', 'Controle DualSense', '4K Gaming', 'Ray Tracing']
       },
@@ -177,7 +177,7 @@ const categories = ref<Category[]>([
         description: 'Notebook Apple ultra-portátil com chip M2',
         value: 'R$ 12.999',
         frequency: 'Mensal',
-        image: 'https://via.placeholder.com/300x200/48bb78/ffffff?text=MacBook+Air',
+        image: 'https://techcrunch.com/wp-content/uploads/2022/07/CMC_1580.jpg',
         featured: true,
         odds: '1 em 100.000'
       }
@@ -193,7 +193,7 @@ const categories = ref<Category[]>([
         description: 'Sedan executivo completo zero quilômetro',
         value: 'R$ 120.000',
         frequency: 'Trimestral',
-        image: 'https://via.placeholder.com/300x200/ed8936/ffffff?text=Honda+Civic',
+        image: 'https://mlqt0se4pk9p.i.optimole.com/q:85/https://www.autodata.com.br/admin/imagens/noticias/honda-civic-2020-tem-nova-versao-de-entrada_68fb894f909bff337c86609fe56aea1b.jpg',
         featured: true,
         odds: '1 em 500.000'
       },
@@ -202,8 +202,11 @@ const categories = ref<Category[]>([
         name: 'Motocicleta Honda CB 600F',
         description: 'Moto esportiva para aventuras inesquecíveis',
         value: 'R$ 35.000',
+
+
+
         frequency: 'Bimestral',
-        image: 'https://via.placeholder.com/300x200/e53e3e/ffffff?text=Honda+CB',
+        image: 'https://midias.agazeta.com.br/2022/05/04/linha-2023-das-honda-cb-500f-e-cb-500x-traz-novidades-para-evoluir-em-performance-e-seguranca-758004-article.jpg',
         odds: '1 em 200.000'
       }
     ]
@@ -218,7 +221,7 @@ const categories = ref<Category[]>([
         description: 'Televisor inteligente com qualidade 4K',
         value: 'R$ 3.999',
         frequency: 'Semanal',
-        image: 'https://via.placeholder.com/300x200/38b2ac/ffffff?text=Smart+TV',
+        image: 'https://lojamultilaser.vtexassets.com/arquivos/ids/1475265-800-auto?v=638876130256470000&width=800&height=auto&aspect=true',
         odds: '1 em 15.000'
       },
       {
@@ -227,7 +230,7 @@ const categories = ref<Category[]>([
         description: 'Refrigerador duplex com tecnologia inverter',
         value: 'R$ 2.599',
         frequency: 'Semanal',
-        image: 'https://via.placeholder.com/300x200/805ad5/ffffff?text=Geladeira',
+        image: 'https://consul.vtexassets.com/arquivos/ids/250371-800-800?v=638745551015330000&width=800&height=800&aspect=true',
         odds: '1 em 12.000'
       }
     ]
@@ -242,7 +245,7 @@ const categories = ref<Category[]>([
         description: 'Cinquenta mil reais para realizar seus sonhos',
         value: 'R$ 50.000',
         frequency: 'Mensal',
-        image: 'https://via.placeholder.com/300x200/ffd700/333333?text=R%24+50.000',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0fZ7EeDx7aKjS2tM5a6K8pf_u_glA9D9v3g&s',
         featured: true,
         odds: '1 em 250.000'
       },
@@ -252,7 +255,7 @@ const categories = ref<Category[]>([
         description: 'Dez mil reais para suas necessidades',
         value: 'R$ 10.000',
         frequency: 'Quinzenal',
-        image: 'https://via.placeholder.com/300x200/ffed4e/333333?text=R%24+10.000',
+        image: 'https://renovainvest.com.br/wp-content/uploads/2022/05/Quanto-rende-dez-mil-reais-no-Tesouro-Direto-Descubra-v2.png',
         odds: '1 em 75.000'
       }
     ]

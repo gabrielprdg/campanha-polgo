@@ -36,66 +36,11 @@
       <div class="stores-content">
         <div class="stores-map-section">
           <div class="map-container">
-            <div class="interactive-map">
-              <div class="map-placeholder">
-                <div class="map-icon">🗺️</div>
-                <p>Mapa Interativo das Lojas</p>
-                <div class="map-controls">
-                  <button @click="zoomIn" class="map-control">+</button>
-                  <button @click="zoomOut" class="map-control">-</button>
-                  <button @click="centerMap" class="map-control">📍</button>
-                </div>
-              </div>
-
-              <!-- Mock store markers -->
-              <div
-                v-for="store in visibleStores"
-                :key="store.id"
-                :class="['store-marker', { selected: selectedStore?.id === store.id }]"
-                :style="{
-                  top: `${store.mapY}%`,
-                  left: `${store.mapX}%`
-                }"
-                @click="selectStore(store)"
-              >
-                <div class="marker-icon">🏪</div>
-                <div class="marker-tooltip">
-                  <strong>{{ store.name }}</strong><br>
-                  {{ store.distance }}km
-                </div>
-              </div>
-
-              <!-- User location marker -->
-              <div
-                v-if="userCoordinates"
-                class="user-marker"
-                :style="{
-                  top: '50%',
-                  left: '50%'
-                }"
-              >
-                <div class="user-icon">📍</div>
-                <div class="user-tooltip">Você está aqui</div>
-              </div>
-            </div>
+            <div id="stores-map" class="leaflet-map"></div>
           </div>
 
           <div class="map-filters">
             <h4>Filtros</h4>
-            <div class="filter-group">
-              <label class="filter-item">
-                <input type="checkbox" v-model="filters.openNow" @change="applyFilters">
-                <span>Abertas agora</span>
-              </label>
-              <label class="filter-item">
-                <input type="checkbox" v-model="filters.hasParking" @change="applyFilters">
-                <span>Com estacionamento</span>
-              </label>
-              <label class="filter-item">
-                <input type="checkbox" v-model="filters.wheelchair" @change="applyFilters">
-                <span>Acessível</span>
-              </label>
-            </div>
             <div class="distance-filter">
               <label>Distância máxima: {{ maxDistance }}km</label>
               <input
@@ -129,53 +74,32 @@
               :class="['store-card', { selected: selectedStore?.id === store.id }]"
               @click="selectStore(store)"
             >
-              <div class="store-image">
-                <img :src="store.image" :alt="store.name" />
-                <div v-if="store.openNow" class="open-badge">Aberto</div>
-                <div v-else class="closed-badge">Fechado</div>
-              </div>
-
               <div class="store-info">
                 <div class="store-header">
                   <h4 class="store-name">{{ store.name }}</h4>
-                  <div class="store-rating">
-                    <span class="rating-stars">{{ '⭐'.repeat(Math.floor(store.rating)) }}</span>
-                    <span class="rating-number">({{ store.rating }})</span>
+                  <div class="store-location-badge">
+                    {{ store.city }} - {{ store.state }}
                   </div>
-                </div>
-
-                <div class="store-address">
-                  <span class="address-icon">📍</span>
-                  <span>{{ store.address }}</span>
                 </div>
 
                 <div class="store-details">
                   <div class="detail-item">
+                    <span class="detail-icon">📍</span>
+                    <span>{{ store.address }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-icon">🆔</span>
+                    <span>CNPJ: {{ store.cnpj }}</span>
+                  </div>
+                  <div class="detail-item">
                     <span class="detail-icon">📏</span>
                     <span>{{ store.distance }}km de distância</span>
                   </div>
-                  <div class="detail-item">
-                    <span class="detail-icon">⏰</span>
-                    <span>{{ store.hours }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-icon">📞</span>
-                    <span>{{ store.phone }}</span>
-                  </div>
-                </div>
-
-                <div class="store-features">
-                  <span v-if="store.hasParking" class="feature-tag">🚗 Estacionamento</span>
-                  <span v-if="store.wheelchair" class="feature-tag">♿ Acessível</span>
-                  <span v-if="store.driveThru" class="feature-tag">🚙 Drive-thru</span>
                 </div>
 
                 <div class="store-actions">
                   <button class="action-btn primary" @click.stop="getDirections(store)">
                     🧭 Como chegar
-                  </button>
-                  <button class="action-btn secondary" @click.stop="callStore(store)">
-                    📞 Ligar
                   </button>
                   <button class="action-btn secondary" @click.stop="shareStore(store)">
                     📤 Compartilhar
@@ -230,13 +154,7 @@
               <span class="stat-label">Estados</span>
             </div>
           </div>
-          <div class="stat-item">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-              <span class="stat-number">{{ averageRating }}</span>
-              <span class="stat-label">Avaliação Média</span>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -244,62 +162,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { storeService } from '@/services/storeService'
+import { geocodingService } from '@/services/geocodingService'
+import type { Store as ApiStore } from '@/types/store'
 
-interface Store {
-  id: number
+interface StoreDisplay {
+  id: string
   name: string
   address: string
   city: string
   state: string
-  phone: string
-  hours: string
-  rating: number
+  cnpj: string
   distance: number
-  openNow: boolean
-  hasParking: boolean
-  wheelchair: boolean
-  driveThru: boolean
-  image: string
   lat: number
   lng: number
-  mapX: number
-  mapY: number
 }
 
 const userLocation = ref('')
 const userCoordinates = ref<{ lat: number; lng: number } | null>(null)
 const loading = ref(false)
-const selectedStore = ref<Store | null>(null)
+const selectedStore = ref<StoreDisplay | null>(null)
 const currentPage = ref(1)
 const itemsPerPage = 6
 const sortBy = ref('distance')
-const maxDistance = ref(10)
+const maxDistance = ref(50)
 
-const filters = ref({
-  openNow: false,
-  hasParking: false,
-  wheelchair: false
-})
-
-const stores = ref<Store[]>([])
+const stores = ref<StoreDisplay[]>([])
+let map: L.Map | null = null
+let markersLayer: L.LayerGroup | null = null
+let userMarker: L.Marker | null = null
 
 const filteredStores = computed(() => {
   let filtered = stores.value
 
   // Apply distance filter
   filtered = filtered.filter(store => store.distance <= maxDistance.value)
-
-  // Apply other filters
-  if (filters.value.openNow) {
-    filtered = filtered.filter(store => store.openNow)
-  }
-  if (filters.value.hasParking) {
-    filtered = filtered.filter(store => store.hasParking)
-  }
-  if (filters.value.wheelchair) {
-    filtered = filtered.filter(store => store.wheelchair)
-  }
 
   return filtered
 })
@@ -312,8 +212,6 @@ const sortedStores = computed(() => {
       return sorted.sort((a, b) => a.distance - b.distance)
     case 'name':
       return sorted.sort((a, b) => a.name.localeCompare(b.name))
-    case 'rating':
-      return sorted.sort((a, b) => b.rating - a.rating)
     default:
       return sorted
   }
@@ -326,8 +224,8 @@ const paginatedStores = computed(() => {
 })
 
 const visibleStores = computed(() => {
-  // Show only stores within the map bounds and current filters
-  return filteredStores.value.slice(0, 20) // Limit markers for performance
+  // Return filtered stores - markers are handled by Leaflet
+  return filteredStores.value
 })
 
 const totalPages = computed(() => Math.ceil(filteredStores.value.length / itemsPerPage))
@@ -335,10 +233,7 @@ const totalPages = computed(() => Math.ceil(filteredStores.value.length / itemsP
 const totalStores = computed(() => stores.value.length)
 const totalCities = computed(() => new Set(stores.value.map(s => s.city)).size)
 const totalStates = computed(() => new Set(stores.value.map(s => s.state)).size)
-const averageRating = computed(() => {
-  const avg = stores.value.reduce((sum, s) => sum + s.rating, 0) / stores.value.length
-  return avg.toFixed(1)
-})
+
 
 const findNearbyStores = async () => {
   if (!userLocation.value.trim()) return
@@ -346,20 +241,25 @@ const findNearbyStores = async () => {
   loading.value = true
 
   try {
-    // Simulate geocoding API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Try to geocode the user input (CEP or address)
+    // For now, we'll use a simple approach - you could integrate a CEP API here
+    const [city, state] = userLocation.value.split(',').map(s => s.trim())
 
-    // Mock coordinates for demonstration
-    userCoordinates.value = {
-      lat: -23.5505 + (Math.random() - 0.5) * 0.1,
-      lng: -46.6333 + (Math.random() - 0.5) * 0.1
+    if (city && state) {
+      const coords = await geocodingService.geocode(city, state)
+      if (coords) {
+        userCoordinates.value = coords
+        updateStoreDistances()
+        updateMapMarkers()
+      } else {
+        alert('Localização não encontrada. Tente usar sua localização atual.')
+      }
+    } else {
+      alert('Digite no formato: Cidade, Estado (ex: São Paulo, SP)')
     }
-
-    // Update store distances based on new location
-    updateStoreDistances()
-
   } catch (error) {
     console.error('Erro ao buscar localização:', error)
+    alert('Erro ao buscar localização. Tente novamente.')
   } finally {
     loading.value = false
   }
@@ -380,11 +280,12 @@ const getUserLocation = () => {
         lng: position.coords.longitude
       }
       updateStoreDistances()
+      updateMapMarkers()
       loading.value = false
     },
     (error) => {
       console.error('Erro ao obter localização:', error)
-      alert('Não foi possível obter sua localização')
+      alert('Não foi possível obter sua localização. Verifique as permissões do navegador.')
       loading.value = false
     }
   )
@@ -394,18 +295,17 @@ const updateStoreDistances = () => {
   if (!userCoordinates.value) return
 
   stores.value.forEach(store => {
-    // Calculate distance using Haversine formula (simplified)
-    const dLat = (store.lat - userCoordinates.value!.lat) * Math.PI / 180
-    const dLng = (store.lng - userCoordinates.value!.lng) * Math.PI / 180
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(userCoordinates.value!.lat * Math.PI / 180) * Math.cos(store.lat * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-    store.distance = Math.round(6371 * c * 10) / 10 // Earth radius in km
+    store.distance = geocodingService.calculateDistance(
+      userCoordinates.value!,
+      { lat: store.lat, lng: store.lng }
+    )
   })
+
+  // Sort stores by distance after updating
+  stores.value.sort((a, b) => a.distance - b.distance)
 }
 
-const selectStore = (store: Store) => {
+const selectStore = (store: StoreDisplay) => {
   selectedStore.value = store
 }
 
@@ -423,16 +323,12 @@ const changePage = (page: number) => {
   }
 }
 
-const getDirections = (store: Store) => {
-  const query = encodeURIComponent(store.address)
+const getDirections = (store: StoreDisplay) => {
+  const query = encodeURIComponent(`${store.address}, ${store.city} - ${store.state}`)
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank')
 }
 
-const callStore = (store: Store) => {
-  window.open(`tel:${store.phone}`)
-}
-
-const shareStore = (store: Store) => {
+const shareStore = (store: StoreDisplay) => {
   if (navigator.share) {
     navigator.share({
       title: store.name,
@@ -441,65 +337,139 @@ const shareStore = (store: Store) => {
     })
   } else {
     // Fallback for browsers without Web Share API
-    const text = `Confira esta loja participante: ${store.name} - ${store.address}`
+    const text = `Confira esta loja participante: ${store.name} - ${store.address}, ${store.city} - ${store.state}`
     navigator.clipboard.writeText(text)
     alert('Informações copiadas para a área de transferência!')
   }
 }
 
-const zoomIn = () => {
-  console.log('Zoom in')
+// Initialize Leaflet map
+const initMap = () => {
+  if (map) return
+
+  // Create map centered on Brazil
+  map = L.map('stores-map').setView([-15.7801, -47.9292], 4)
+
+  // Add OpenStreetMap tile layer
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(map)
+
+  // Create layer group for markers
+  markersLayer = L.layerGroup().addTo(map)
 }
 
-const zoomOut = () => {
-  console.log('Zoom out')
-}
+// Update map markers
+const updateMapMarkers = () => {
+  if (!map || !markersLayer) return
 
-const centerMap = () => {
-  console.log('Center map')
-}
+  // Clear existing markers
+  markersLayer.clearLayers()
 
-// Generate mock store data
-onMounted(() => {
-  const storeNames = [
-    'Supermercado Central', 'Loja do João', 'Mercado São Paulo', 'Atacadão Popular',
-    'Drogaria Saúde', 'Farmácia Bem Estar', 'Eletrônicos Tech', 'Casa & Construção',
-    'Shopping da Cidade', 'Posto de Gasolina Rápido', 'Padaria do Bairro', 'Açougue Premium'
-  ]
+  // Add store markers
+  filteredStores.value.forEach(store => {
+    if (store.lat && store.lng) {
+      const marker = L.marker([store.lat, store.lng], {
+        icon: L.divIcon({
+          className: 'custom-store-marker',
+          html: '<div class="marker-pin">🏪</div>',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        })
+      })
 
-  const cities = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Porto Alegre', 'Curitiba', 'Salvador']
-  const states = ['SP', 'RJ', 'MG', 'RS', 'PR', 'BA']
+      marker.bindPopup(`
+        <div class="marker-popup">
+          <h4>${store.name}</h4>
+          <p>${store.city} - ${store.state}</p>
+          <p>${store.distance ? store.distance + 'km de distância' : ''}</p>
+        </div>
+      `)
 
-  const mockStores: Store[] = []
+      marker.on('click', () => {
+        selectStore(store)
+      })
 
-  for (let i = 1; i <= 50; i++) {
-    const cityIndex = Math.floor(Math.random() * cities.length)
-    const lat = -23.5505 + (Math.random() - 0.5) * 2 // Around São Paulo area
-    const lng = -46.6333 + (Math.random() - 0.5) * 2
+      marker.addTo(markersLayer!)
+    }
+  })
 
-    mockStores.push({
-      id: i,
-      name: storeNames[Math.floor(Math.random() * storeNames.length)],
-      address: `Rua ${i}, ${Math.floor(Math.random() * 999) + 1} - Centro`,
-      city: cities[cityIndex],
-      state: states[cityIndex],
-      phone: `(11) 9${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
-      hours: Math.random() > 0.5 ? '08:00 - 22:00' : '08:00 - 18:00',
-      rating: Math.round((3 + Math.random() * 2) * 10) / 10, // 3.0 to 5.0
-      distance: Math.round(Math.random() * 20 * 10) / 10, // 0 to 20km
-      openNow: Math.random() > 0.3,
-      hasParking: Math.random() > 0.4,
-      wheelchair: Math.random() > 0.6,
-      driveThru: Math.random() > 0.8,
-      image: `https://via.placeholder.com/200x120/667eea/ffffff?text=Loja+${i}`,
-      lat,
-      lng,
-      mapX: 20 + Math.random() * 60, // Random position on map
-      mapY: 20 + Math.random() * 60
-    })
+  // Add user marker if location is available
+  if (userCoordinates.value) {
+    if (userMarker) {
+      userMarker.setLatLng([userCoordinates.value.lat, userCoordinates.value.lng])
+    } else {
+      userMarker = L.marker([userCoordinates.value.lat, userCoordinates.value.lng], {
+        icon: L.divIcon({
+          className: 'custom-user-marker',
+          html: '<div class="marker-pin user">📍</div>',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        })
+      }).addTo(markersLayer!)
+
+      userMarker.bindPopup('<div class="marker-popup"><strong>Você está aqui</strong></div>')
+    }
+
+    // Center map on user location
+    map.setView([userCoordinates.value.lat, userCoordinates.value.lng], 10)
   }
+}
 
-  stores.value = mockStores.sort((a, b) => a.distance - b.distance)
+// Convert API store to display store
+const convertApiStoreToDisplay = async (apiStore: ApiStore): Promise<StoreDisplay> => {
+  // Use geocoding service to get coordinates
+  const coords = await geocodingService.geocode(apiStore.city, apiStore.state)
+
+  return {
+    id: apiStore.id,
+    name: apiStore.name,
+    address: apiStore.address,
+    city: apiStore.city,
+    state: apiStore.state,
+    cnpj: apiStore.cnpj,
+    distance: 0, // Will be calculated when user location is available
+    lat: coords?.lat || -15.7801, // Default to Brazil center if not found
+    lng: coords?.lng || -47.9292
+  }
+}
+
+// Load stores from API
+const loadStores = async () => {
+  try {
+    loading.value = true
+    const apiStores = await storeService.getAll()
+
+    // Convert stores with geocoding (async)
+    const storePromises = apiStores.map(store => convertApiStoreToDisplay(store))
+    stores.value = await Promise.all(storePromises)
+
+    // Update map markers after loading stores
+    updateMapMarkers()
+  } catch (error) {
+    console.error('Erro ao carregar lojas:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Watch for filter changes and update markers
+watch([() => filteredStores.value, maxDistance], () => {
+  updateMapMarkers()
+})
+
+onMounted(() => {
+  initMap()
+  loadStores()
+})
+
+onBeforeUnmount(() => {
+  // Clean up map
+  if (map) {
+    map.remove()
+    map = null
+  }
 })
 </script>
 
@@ -659,129 +629,88 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 
-.interactive-map {
-  height: 400px;
-  background: #e2e8f0;
+.leaflet-map {
+  height: 500px;
   border-radius: 0.5rem;
-  position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
-.map-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #718096;
+/* Custom marker styles */
+:deep(.custom-store-marker),
+:deep(.custom-user-marker) {
+  background: none;
+  border: none;
 }
 
-.map-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.map-controls {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.map-control {
+:deep(.marker-pin) {
   width: 40px;
   height: 40px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.store-marker,
-.user-marker {
-  position: absolute;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.marker-icon,
-.user-icon {
-  width: 30px;
-  height: 30px;
   border-radius: 50%;
   background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
 }
 
-.store-marker.selected .marker-icon {
-  background: #ffd700;
-  transform: translate(-50%, -50%) scale(1.2);
+:deep(.marker-pin:hover) {
+  transform: scale(1.1);
 }
 
-.marker-tooltip,
-.user-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  margin-bottom: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+:deep(.marker-pin.user) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: pulse 2s infinite;
 }
 
-.store-marker:hover .marker-tooltip,
-.user-marker:hover .user-tooltip {
-  opacity: 1;
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 20px rgba(102, 126, 234, 0.6);
+  }
+}
+
+/* Popup styles */
+:deep(.leaflet-popup-content-wrapper) {
+  border-radius: 0.5rem;
+  padding: 0;
+}
+
+:deep(.marker-popup) {
+  padding: 0.75rem;
+  min-width: 150px;
+}
+
+:deep(.marker-popup h4) {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+:deep(.marker-popup p) {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #4a5568;
 }
 
 .map-filters h4 {
   font-size: 1.1rem;
   font-weight: 600;
   color: #2d3748;
-  margin-bottom: 1rem;
-}
-
-.filter-group {
-  margin-bottom: 1rem;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #4a5568;
-}
-
-.distance-filter {
-  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .distance-filter label {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #4a5568;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
 }
 
 .distance-slider {
@@ -837,8 +766,6 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
-  display: flex;
-  gap: 1rem;
 }
 
 .store-card:hover,
@@ -847,77 +774,35 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-.store-image {
-  width: 120px;
-  height: 120px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.store-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.open-badge,
-.closed-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.open-badge {
-  background: #48bb78;
-  color: white;
-}
-
-.closed-badge {
-  background: #e53e3e;
-  color: white;
-}
-
 .store-info {
-  flex: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .store-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 1rem;
 }
 
 .store-name {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #2d3748;
+  flex: 1;
 }
 
-.store-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.8rem;
-}
-
-.rating-number {
-  color: #718096;
-}
-
-.store-address {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: #4a5568;
-  font-size: 0.9rem;
+.store-location-badge {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .store-details {
@@ -929,23 +814,15 @@ onMounted(() => {
 
 .detail-item {
   display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: #718096;
-}
-
-.store-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.feature-tag {
-  background: #edf2f7;
+  align-items: flex-start;
+  gap: 0.5rem;
   color: #4a5568;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.7rem;
+  font-size: 0.95rem;
+}
+
+.detail-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .store-actions {
@@ -1088,17 +965,21 @@ onMounted(() => {
     gap: 2rem;
   }
 
-  .store-card {
+  .store-header {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .store-image {
-    width: 100%;
-    height: 150px;
+  .store-location-badge {
+    align-self: flex-start;
   }
 
   .store-actions {
-    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
   }
 
   .stats-grid {

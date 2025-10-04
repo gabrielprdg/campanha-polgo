@@ -47,11 +47,40 @@ const navigationItems: NavigationItem[] = [
 const isMobileMenuOpen = ref(false)
 
 const scrollToSection = (href: string) => {
-  const element = document.querySelector(href)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  }
   isMobileMenuOpen.value = false
+
+  // If not on home page, navigate to home first
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/').then(() => {
+      // Wait for the next tick to ensure DOM is updated
+      setTimeout(() => {
+        const element = document.querySelector(href)
+        if (element) {
+          const headerOffset = 80
+          const elementPosition = element.getBoundingClientRect().top
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }, 100)
+    })
+  } else {
+    // Already on home page, just scroll
+    const element = document.querySelector(href)
+    if (element) {
+      const headerOffset = 80
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
 }
 
 const toggleMobileMenu = () => {
