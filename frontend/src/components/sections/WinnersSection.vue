@@ -28,7 +28,7 @@
 
         <div class="winners-list-section">
           <div class="list-header">
-            <h3>{{ filteredWinners.length }} ganhadores</h3>
+            <h3>{{ totalWinners }} ganhadores{{ selectedState ? ` em ${selectedState}` : '' }}</h3>
             <div class="sort-controls">
               <select v-model="sortBy" @change="sortWinners" class="sort-select">
                 <option value="date">Mais recentes</option>
@@ -134,17 +134,20 @@ interface WinnerDisplay extends Winner {
 const selectedState = ref('')
 const selectedWinner = ref<WinnerDisplay | null>(null)
 const currentPage = ref(1)
-const itemsPerPage = 6
+const itemsPerPage = 10
 const sortBy = ref('date')
+const totalWinnersCount = ref(0)
+const totalPagesCount = ref(0)
 
 const winners = ref<WinnerDisplay[]>([])
+const allWinnersForMap = ref<WinnerDisplay[]>([]) // For map display (no pagination)
 let map: L.Map | null = null
 let markersLayer: L.LayerGroup | null = null
 
-const filteredWinners = computed(() => {
-  let filtered = winners.value
+const filteredWinnersForMap = computed(() => {
+  let filtered = allWinnersForMap.value
 
-  // Apply state filter
+  // Apply state filter for map
   if (selectedState.value) {
     filtered = filtered.filter(winner => winner.state === selectedState.value)
   }
@@ -153,7 +156,7 @@ const filteredWinners = computed(() => {
 })
 
 const sortedWinners = computed(() => {
-  const sorted = [...filteredWinners.value]
+  const sorted = [...winners.value]
 
   switch (sortBy.value) {
     case 'date':
@@ -167,19 +170,15 @@ const sortedWinners = computed(() => {
   }
 })
 
-const paginatedWinners = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return sortedWinners.value.slice(start, end)
-})
+const paginatedWinners = computed(() => sortedWinners.value)
 
-const totalPages = computed(() => Math.ceil(filteredWinners.value.length / itemsPerPage))
+const totalPages = computed(() => totalPagesCount.value)
 
-const totalWinners = computed(() => winners.value.length)
-const totalCities = computed(() => new Set(winners.value.map(w => w.city)).size)
-const totalStates = computed(() => new Set(winners.value.map(w => w.state)).size)
+const totalWinners = computed(() => totalWinnersCount.value)
+const totalCities = computed(() => new Set(allWinnersForMap.value.map(w => w.city)).size)
+const totalStates = computed(() => new Set(allWinnersForMap.value.map(w => w.state)).size)
 const uniqueStates = computed(() => {
-  return Array.from(new Set(winners.value.map(w => w.state))).sort()
+  return Array.from(new Set(allWinnersForMap.value.map(w => w.state))).sort()
 })
 
 // Initialize Leaflet map
@@ -209,7 +208,7 @@ const updateMapMarkers = () => {
   // Group winners by location to show multiple winners at same location
   const winnersByLocation = new Map<string, WinnerDisplay[]>()
 
-  filteredWinners.value.forEach(winner => {
+  filteredWinnersForMap.value.forEach(winner => {
     const key = `${winner.lat},${winner.lng}`
     if (!winnersByLocation.has(key)) {
       winnersByLocation.set(key, [])
@@ -273,15 +272,17 @@ const selectWinner = (winner: WinnerDisplay) => {
 
 const applyFilters = () => {
   currentPage.value = 1
+  loadWinners()
 }
 
 const sortWinners = () => {
-  currentPage.value = 1
+  // Sorting is done client-side on the current page
 }
 
 const changePage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
+    loadWinners()
   }
 }
 
@@ -305,30 +306,52 @@ const convertApiWinnerToDisplay = async (apiWinner: Winner): Promise<WinnerDispl
   }
 }
 
-// Load winners from API
-const loadWinners = async () => {
+// Load all winners for the map (no pagination)
+const loadAllWinnersForMap = async () => {
   try {
     const apiWinners = await winnerService.getAll()
 
     // Convert winners with geocoding (async)
     const winnerPromises = apiWinners.map(winner => convertApiWinnerToDisplay(winner))
-    winners.value = await Promise.all(winnerPromises)
+    allWinnersForMap.value = await Promise.all(winnerPromises)
 
     // Update map markers after loading winners
     updateMapMarkers()
+  } catch (error) {
+    console.error('Erro ao carregar ganhadores para o mapa:', error)
+  }
+}
+
+// Load winners from API with pagination
+const loadWinners = async () => {
+  try {
+    const response = await winnerService.getPaginated({
+      page: currentPage.value,
+      limit: itemsPerPage,
+      state: selectedState.value || undefined
+    })
+
+    // Convert winners with geocoding (async)
+    const winnerPromises = response.winners.map(winner => convertApiWinnerToDisplay(winner))
+    winners.value = await Promise.all(winnerPromises)
+
+    // Update pagination info
+    totalWinnersCount.value = response.pagination.total
+    totalPagesCount.value = response.pagination.totalPages
   } catch (error) {
     console.error('Erro ao carregar ganhadores:', error)
   }
 }
 
 // Watch for filter changes and update markers
-watch([() => filteredWinners.value, selectedState], () => {
+watch([() => filteredWinnersForMap.value, selectedState], () => {
   updateMapMarkers()
 })
 
 onMounted(() => {
   initMap()
   loadWinners()
+  loadAllWinnersForMap()
 })
 
 onBeforeUnmount(() => {
