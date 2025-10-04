@@ -1,5 +1,5 @@
 import { AddWinnerRepository } from '../../../data/protocols/db/add-winner-repository'
-import { LoadWinnersRepository } from '../../../data/protocols/db/load-winners-repository'
+import { LoadWinnersRepository, PaginationParams, PaginatedWinnersResult } from '../../../data/protocols/db/load-winners-repository'
 import { LoadWinnerByIdRepository } from '../../../data/protocols/db/load-winner-by-id-repository'
 import { UpdateWinnerByIdRepository } from '../../../data/protocols/db/update-winner-by-id-repository'
 import { DeleteWinnerByIdRepository } from '../../../data/protocols/db/delete-winner-by-id-repository'
@@ -47,6 +47,36 @@ export class WinnerMongoRepository
   async loadAll(): Promise<WinnerModel[]> {
     const winners = await WinnerMongoModel.find().sort({ created_at: -1 })
     return winners.map(winner => this.mapToModel(winner))
+  }
+
+  async loadPaginated(params: PaginationParams): Promise<PaginatedWinnersResult> {
+    const { page = 1, limit = 10, state } = params
+    const skip = (page - 1) * limit
+
+    // Build filter
+    const filter: any = {}
+    if (state) {
+      filter.state = state
+    }
+
+    // Execute query with pagination
+    const [winners, total] = await Promise.all([
+      WinnerMongoModel.find(filter)
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(limit),
+      WinnerMongoModel.countDocuments(filter)
+    ])
+
+    const totalPages = Math.ceil(total / limit)
+
+    return {
+      winners: winners.map(winner => this.mapToModel(winner)),
+      total,
+      page,
+      limit,
+      totalPages
+    }
   }
 
   async loadById(id: string): Promise<WinnerModel | null> {

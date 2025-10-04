@@ -1,6 +1,6 @@
 import { WinnerModel } from '../../domain/models/winner'
 import { AddWinner, AddWinnerParams } from '../../domain/use-cases/winner/add-winner'
-import { LoadWinners } from '../../domain/use-cases/winner/load-winners'
+import { LoadWinners, PaginationParams, PaginatedWinnersResult } from '../../domain/use-cases/winner/load-winners'
 import { LoadWinnerById } from '../../domain/use-cases/winner/load-winner-by-id'
 import { UpdateWinnerById, UpdateWinnerParams } from '../../domain/use-cases/winner/update-winner-by-id'
 import { DeleteWinnerById } from '../../domain/use-cases/winner/delete-winner-by-id'
@@ -19,6 +19,17 @@ export const mockLoadWinners = (): LoadWinners => {
   class LoadWinnersStub implements LoadWinners {
     async loadAll(): Promise<WinnerModel[]> {
       return Promise.resolve([mockWinnerModel(), mockWinnerModel()])
+    }
+
+    async loadPaginated(_params: PaginationParams): Promise<PaginatedWinnersResult> {
+      const winners = [mockWinnerModel(), mockWinnerModel()]
+      return Promise.resolve({
+        winners,
+        total: winners.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1
+      })
     }
   }
   return new LoadWinnersStub()

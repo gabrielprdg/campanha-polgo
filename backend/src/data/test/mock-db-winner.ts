@@ -1,5 +1,5 @@
 import { AddWinnerRepository } from '../protocols/db/add-winner-repository'
-import { LoadWinnersRepository } from '../protocols/db/load-winners-repository'
+import { LoadWinnersRepository, PaginationParams, PaginatedWinnersResult } from '../protocols/db/load-winners-repository'
 import { LoadWinnerByIdRepository } from '../protocols/db/load-winner-by-id-repository'
 import { UpdateWinnerByIdRepository } from '../protocols/db/update-winner-by-id-repository'
 import { DeleteWinnerByIdRepository } from '../protocols/db/delete-winner-by-id-repository'
@@ -18,6 +18,17 @@ export const mockLoadWinnersRepository = (): LoadWinnersRepository => {
   class LoadWinnersRepositoryStub implements LoadWinnersRepository {
     async loadAll(): Promise<any[]> {
       return [mockWinnerModel()]
+    }
+
+    async loadPaginated(_params: PaginationParams): Promise<PaginatedWinnersResult> {
+      const winners = [mockWinnerModel()]
+      return {
+        winners,
+        total: winners.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1
+      }
     }
   }
   return new LoadWinnersRepositoryStub()
