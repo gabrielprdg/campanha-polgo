@@ -11,10 +11,10 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: campanha-polgo-backend
+  ECR_REPOSITORY: campanha-polgo/api
   ECS_SERVICE: campanha-polgo-service
-  ECS_CLUSTER: campanha-polgo-cluster
-  ECS_TASK_DEFINITION: campanha-polgo-task
+  ECS_CLUSTER: campanha-polgo-cst
+  ECS_TASK_DEFINITION: campanha-polgo-app
   CONTAINER_NAME: campanha-polgo-app
 
 jobs:
