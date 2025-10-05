@@ -17,12 +17,18 @@ export class MongoHelper {
     try {
       mongoose.set('strictQuery', false);
 
-      const options = {
+      const options: any = {
         autoIndex: isDevelopment,
         maxPoolSize: 10,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000
       };
+
+      // Add TLS certificate for DocumentDB in production
+      if (!isDevelopment && config.mongodbUri.includes('docdb.amazonaws.com')) {
+        options.tls = true;
+        options.tlsCAFile = '/usr/src/campanha-polgo/global-bundle.pem';
+      }
 
       await mongoose.connect(config.mongodbUri, options);
 

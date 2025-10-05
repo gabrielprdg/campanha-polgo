@@ -7,6 +7,9 @@ RUN npm install
 
 COPY . .
 
+# Copy DocumentDB certificate
+COPY global-bundle.pem /usr/src/campanha-polgo/global-bundle.pem
+
 RUN npm run build
 
 EXPOSE 3000
