@@ -25,6 +25,11 @@ app.use(compression())
 // Swagger documentation
 setupSwagger(app)
 
+// Health check endpoint for ALB
+app.get('/', (_req, res) => {
+  res.status(200).json({ status: 'ok', message: 'API is running' })
+})
+
 // Routes
 setupRoutes(app)
 
