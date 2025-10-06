@@ -18,11 +18,27 @@
           <button class="btn-login" @click="navigateToDashboard">Login</button>
           <button class="btn-register" @click="navigateToDashboard">Cadastrar</button>
         </div>
-        <button class="menu-toggle" @click="toggleMobileMenu">
+        <button class="menu-toggle" @click="toggleMobileMenu" :class="{ active: isMobileMenuOpen }">
           <span></span>
           <span></span>
           <span></span>
         </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" :class="{ open: isMobileMenuOpen }">
+      <nav class="mobile-navigation">
+        <ul>
+          <li v-for="item in navigationItems" :key="item.name">
+            <a :href="item.href" @click.prevent="scrollToSection(item.href)">
+              {{ item.name }}
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="mobile-auth-buttons">
+        <button class="btn-login" @click="navigateToDashboard">Login</button>
+        <button class="btn-register" @click="navigateToDashboard">Cadastrar</button>
       </div>
     </div>
   </header>
@@ -245,6 +261,7 @@ const navigateToHome = () => {
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  z-index: 1002;
 }
 
 .menu-toggle span {
@@ -253,6 +270,72 @@ const navigateToHome = () => {
   background: #4a5568;
   margin: 3px 0;
   transition: 0.3s;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+.mobile-menu.open {
+  max-height: 500px;
+}
+
+.mobile-navigation ul {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.mobile-navigation li {
+  border-bottom: 1px solid rgba(123, 60, 240, 0.1);
+}
+
+.mobile-navigation a {
+  display: block;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  color: var(--polgo-gray-medium);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mobile-navigation a:hover {
+  background: rgba(123, 60, 240, 0.05);
+  color: var(--polgo-purple);
+}
+
+.mobile-auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 2rem 1.5rem;
+}
+
+.mobile-auth-buttons .btn-login,
+.mobile-auth-buttons .btn-register {
+  width: 100%;
+  padding: 0.75rem;
 }
 
 /* Desktop optimizations */
