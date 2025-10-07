@@ -90,7 +90,6 @@ Edite o arquivo `backend/.env` com suas configurações:
 NODE_ENV=development
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/campanha-polgo
-JWT_SECRET=your-super-secret-jwt-key-here
 CORS_ORIGIN=http://localhost:5173
 API_VERSION=v1
 ```
@@ -101,7 +100,6 @@ API_VERSION=v1
 - `MONGODB_URI`: String de conexão com MongoDB
   - Para desenvolvimento local: `mongodb://localhost:27017/campanha-polgo`
   - Para Docker: `mongodb://admin:admin123@mongodb:27017/campanha-polgo?authSource=admin`
-- `JWT_SECRET`: Chave secreta para tokens JWT (altere em produção)
 - `CORS_ORIGIN`: URL do frontend permitida (padrão: http://localhost:5173)
 - `API_VERSION`: Versão da API (padrão: v1)
 
@@ -124,12 +122,9 @@ VITE_API_URL=http://localhost:3000
 **Variáveis explicadas:**
 - `VITE_API_URL`: URL base da API backend
   - Desenvolvimento local: `http://localhost:3000`
-  - Produção: URL do seu servidor backend
 
 ⚠️ **Importante**:
 - Variáveis do frontend devem começar com `VITE_` para serem expostas no navegador
-- Nunca coloque informações sensíveis (senhas, tokens) no `.env` do frontend
-- Os arquivos `.env` estão no `.gitignore` e não devem ser commitados
 
 ## 🐳 Docker
 
@@ -138,7 +133,7 @@ VITE_API_URL=http://localhost:3000
 Antes de executar com Docker, certifique-se de:
 
 1. **Configurar as variáveis de ambiente** conforme descrito na seção anterior
-2. **Criar os arquivos `.env`** em `backend/.env` e `frontend/.env`
+2. **Criar os arquivos `.env`** em `backend/.env` 
 3. **Atualizar o `MONGODB_URI`** no `backend/.env` para usar o nome do serviço Docker:
    ```env
    MONGODB_URI=mongodb://admin:admin123@mongodb:27017/campanha-polgo?authSource=admin
@@ -158,9 +153,6 @@ docker-compose logs -f
 # Ver logs apenas do backend
 docker-compose logs -f backend
 
-# Ver logs apenas do frontend
-docker-compose logs -f frontend
-
 # Parar os serviços
 docker-compose down
 
@@ -168,75 +160,10 @@ docker-compose down
 docker-compose up -d --build
 ```
 
-### Executar containers individualmente
-
-#### Backend com Docker
-
-```bash
-cd backend
-
-# Build da imagem
-docker build -t campanha-polgo-backend .
-
-# Executar container
-docker run -d \
-  --name campanha-polgo-backend \
-  -p 3000:3000 \
-  --env-file .env \
-  campanha-polgo-backend
-
-# Ver logs
-docker logs -f campanha-polgo-backend
-
-# Parar container
-docker stop campanha-polgo-backend
-docker rm campanha-polgo-backend
-```
-
-#### Frontend com Docker
-
-```bash
-cd frontend
-
-# Build da imagem
-docker build -t campanha-polgo-frontend .
-
-# Executar container
-docker run -d \
-  --name campanha-polgo-frontend \
-  -p 5173:5173 \
-  --env-file .env \
-  campanha-polgo-frontend
-
-# Ver logs
-docker logs -f campanha-polgo-frontend
-
-# Parar container
-docker stop campanha-polgo-frontend
-docker rm campanha-polgo-frontend
-```
-
-#### MongoDB com Docker
-
-```bash
-# Executar MongoDB
-docker run -d \
-  --name campanha-polgo-mongodb \
-  -p 27017:27017 \
-  -e MONGO_INITDB_ROOT_USERNAME=admin \
-  -e MONGO_INITDB_ROOT_PASSWORD=admin123 \
-  -v mongodb_data:/data/db \
-  mongo:latest
-
-# Acessar MongoDB shell
-docker exec -it campanha-polgo-mongodb mongosh -u admin -p admin123 --authenticationDatabase admin
-```
 
 ## 📚 Documentação da API
 
-Após iniciar a aplicação, você pode acessar a documentação interativa da API (Swagger/OpenAPI) de duas formas:
-
-### Via Docker (recomendado)
+Após iniciar a aplicação, você pode acessar a documentação interativa da API (Swagger/OpenAPI):
 
 ```
 http://localhost:3000/api-docs
@@ -285,26 +212,6 @@ A documentação Swagger permite:
 docker exec -it campanha-polgo-mongodb mongosh -u admin -p admin123 --authenticationDatabase admin
 ```
 
-### Comandos úteis MongoDB
-
-```javascript
-// Usar database
-use campanha-polgo
-
-// Listar coleções
-show collections
-
-// Ver documentos
-db.stores.find().pretty()
-db.winners.find().pretty()
-```
-
-## 🔒 Segurança
-
-- ⚠️ **IMPORTANTE**: Altere o `JWT_SECRET` e senhas do MongoDB antes de usar em produção
-- Nunca commit o arquivo `.env` no repositório
-- Use senhas fortes para o MongoDB em produção
-
 ## 📦 Estrutura do Projeto
 
 ```
@@ -321,81 +228,6 @@ campanha-polgo/
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
-```
-
-## 🧪 Desenvolvimento
-
-### Desenvolvimento local (sem Docker)
-
-#### Backend
-
-1. Instale as dependências:
-```bash
-cd backend
-npm install
-```
-
-2. Configure o `.env` apontando para MongoDB local
-
-3. Execute em modo desenvolvimento:
-```bash
-npm run dev
-```
-
-4. Build:
-```bash
-npm run build
-```
-
-5. Executar testes:
-```bash
-# Executar todos os testes
-npm test
-
-# Executar testes em modo watch
-npm run test:watch
-
-# Verificar tipos TypeScript
-npm run typecheck
-```
-
-#### Frontend
-
-1. Instale as dependências:
-```bash
-cd frontend
-npm install
-```
-
-2. Configure o arquivo `.env`:
-```bash
-cp .env.example .env
-```
-
-3. Execute em modo desenvolvimento:
-```bash
-npm run dev
-```
-O frontend estará disponível em `http://localhost:5173`
-
-4. Build:
-```bash
-npm run build
-```
-
-5. Preview do build:
-```bash
-npm run preview
-```
-
-6. Verificar tipos TypeScript:
-```bash
-npm run type-check
-```
-
-7. Lint e correção automática:
-```bash
-npm run lint
 ```
 
 ## 📝 Licença

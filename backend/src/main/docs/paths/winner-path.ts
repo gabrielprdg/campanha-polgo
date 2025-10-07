@@ -184,3 +184,29 @@ export const winnerByIdPath = {
     }
   }
 }
+
+export const winnerAggregationPath = {
+  get: {
+    tags: ['Ganhadores'],
+    summary: 'API para obter agregação de ganhadores por estado',
+    description: 'Retorna a contagem total de ganhadores agrupados por estado',
+    responses: {
+      200: {
+        description: 'Agregação retornada com sucesso',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: {
+                $ref: '#/schemas/winnerAggregationByState'
+              }
+            }
+          }
+        }
+      },
+      500: {
+        $ref: '#/components/serverError'
+      }
+    }
+  }
+}
