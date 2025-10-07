@@ -90,6 +90,7 @@ Edite o arquivo `backend/.env` com suas configurações:
 NODE_ENV=development
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/campanha-polgo
+JWT_SECRET=my-super-secret-jwt-key-change-in-production
 CORS_ORIGIN=http://localhost:5173
 API_VERSION=v1
 ```
@@ -100,6 +101,7 @@ API_VERSION=v1
 - `MONGODB_URI`: String de conexão com MongoDB
   - Para desenvolvimento local: `mongodb://localhost:27017/campanha-polgo`
   - Para Docker: `mongodb://admin:admin123@mongodb:27017/campanha-polgo?authSource=admin`
+- `JWT_SECRET`: Chave secreta para geração de tokens JWT (mude em produção!)
 - `CORS_ORIGIN`: URL do frontend permitida (padrão: http://localhost:5173)
 - `API_VERSION`: Versão da API (padrão: v1)
 
@@ -117,14 +119,87 @@ Edite o arquivo `frontend/.env`:
 ```env
 # API Configuration
 VITE_API_URL=http://localhost:3000
+
+# Admin Authentication (será configurado após gerar o token)
+VITE_ADMIN_TOKEN=
 ```
 
 **Variáveis explicadas:**
 - `VITE_API_URL`: URL base da API backend
   - Desenvolvimento local: `http://localhost:3000`
+- `VITE_ADMIN_TOKEN`: Token JWT para autenticação admin (gerar conforme instruções abaixo)
 
 ⚠️ **Importante**:
 - Variáveis do frontend devem começar com `VITE_` para serem expostas no navegador
+- Após mudar variáveis `VITE_*`, sempre reinicie o servidor de desenvolvimento
+
+### 3. Configure a autenticação JWT
+
+A API protege rotas de criação, edição e exclusão (POST, PATCH, DELETE) com autenticação JWT.
+
+#### Desenvolvimento Local
+
+**1. Gere o token admin:**
+
+```bash
+cd backend
+npx tsx src/main/scripts/generate-token.ts
+```
+
+Isso exibirá algo como:
+```
+🔑 Admin Token Generated Successfully!
+
+ADMIN_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_ADMIN_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**2. Adicione o token no `frontend/.env`:**
+
+```env
+VITE_ADMIN_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**3. Reinicie o frontend:**
+
+```bash
+cd frontend
+npm run dev
+```
+
+#### Com Docker
+
+**1. Gere o token dentro do container:**
+
+```bash
+docker exec campanha-polgo-app node -e "
+const jwt = require('jsonwebtoken');
+const secret = process.env.JWT_SECRET;
+const token = jwt.sign({
+  role: 'admin',
+  name: 'Admin User',
+  createdAt: new Date().toISOString()
+}, secret);
+console.log('VITE_ADMIN_TOKEN=' + token);
+"
+```
+
+**2. Adicione o token no `frontend/.env` e reinicie o frontend**
+
+#### Produção
+
+1. Configure `JWT_SECRET` forte no backend (via secrets manager)
+2. Gere o token localmente usando o mesmo `JWT_SECRET`:
+   ```bash
+   JWT_SECRET="seu-secret-de-producao" npx tsx src/main/scripts/generate-token.ts
+   ```
+3. Adicione `VITE_ADMIN_TOKEN` no frontend
+4. Build do frontend: `npm run build`
+
+⚠️ **Notas importantes:**
+- O token **não expira** - configure uma vez e use indefinidamente
+- Rotas GET são públicas e não requerem autenticação
+- Rotas POST/PATCH/DELETE requerem o header `Authorization: Bearer <token>`
 
 ## 🐳 Docker
 
@@ -144,6 +219,11 @@ Antes de executar com Docker, certifique-se de:
 Se você tiver um arquivo `docker-compose.yml`:
 
 ```bash
+# Build do frontend (NECESSÁRIO antes de iniciar)
+cd frontend
+npm run build
+cd ..
+
 # Iniciar todos os serviços (backend, frontend, MongoDB)
 docker-compose up -d
 
@@ -169,18 +249,8 @@ Após iniciar a aplicação, você pode acessar a documentação interativa da A
 http://localhost:3000/api-docs
 ```
 
-### Desenvolvimento local
 
-1. Certifique-se de que o backend está rodando:
-```bash
-cd backend
-npm run dev
-```
 
-2. Acesse a documentação em:
-```
-http://localhost:3000/api-docs
-```
 
 A documentação Swagger permite:
 - Visualizar todos os endpoints disponíveis
@@ -203,6 +273,7 @@ A documentação Swagger permite:
 - `GET /api/v1/winners/:id` - Buscar ganhador por ID
 - `PATCH /api/v1/winners/:id` - Atualizar ganhador
 - `DELETE /api/v1/winners/:id` - Deletar ganhador
+- `GET /api/v1/winners/aggregate/by-state` - Agregação de ganhadores por estado
 
 ## 🗄️ MongoDB
 

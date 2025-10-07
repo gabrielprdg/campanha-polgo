@@ -2,6 +2,7 @@ import request from 'supertest'
 import app from '../config/app'
 import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../../infra/mongoDB/helper/test-helper'
 import { WinnerMongoModel } from '../../infra/mongoDB/winner/winner-schema'
+import { makeAccessToken } from './test-helpers/auth-helper'
 
 describe('Winner Routes', () => {
   beforeAll(async () => {
@@ -18,8 +19,11 @@ describe('Winner Routes', () => {
 
   describe('POST /winners', () => {
     test('Should return 204 on add winner', async () => {
+      const accessToken = makeAccessToken()
+
       await request(app)
         .post('/api/v1/winners')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           name: 'any_name',
           state: 'any_state',
@@ -49,6 +53,8 @@ describe('Winner Routes', () => {
 
   describe('PATCH /winners/:id', () => {
     test('Should return 200 on update winner by Id', async () => {
+      const accessToken = makeAccessToken()
+
       const winner = await WinnerMongoModel.create({
         name: 'any_name',
         state: 'any_state',
@@ -59,6 +65,7 @@ describe('Winner Routes', () => {
 
       await request(app)
         .patch(`/api/v1/winners/${winner._id.toString()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           name: 'updated_name',
           state: 'updated_state'
@@ -69,6 +76,8 @@ describe('Winner Routes', () => {
 
   describe('DELETE /winners/:id', () => {
     test('Should return 204 on delete winner by Id', async () => {
+      const accessToken = makeAccessToken()
+
       const winner = await WinnerMongoModel.create({
         name: 'any_name',
         state: 'any_state',
@@ -79,6 +88,7 @@ describe('Winner Routes', () => {
 
       await request(app)
         .delete(`/api/v1/winners/${winner._id.toString()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(204)
     })
   })

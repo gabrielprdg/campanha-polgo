@@ -2,6 +2,7 @@ import request from 'supertest'
 import app from '../config/app'
 import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../../infra/mongoDB/helper/test-helper'
 import { StoreMongoModel } from '../../infra/mongoDB/store/store-schema'
+import { makeAccessToken } from './test-helpers/auth-helper'
 
 describe('Store Routes', () => {
   beforeAll(async () => {
@@ -18,8 +19,11 @@ describe('Store Routes', () => {
 
   describe('POST /stores', () => {
     test('Should return 201 on add store', async () => {
+      const accessToken = makeAccessToken()
+
       await request(app)
         .post('/api/v1/stores')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           name: 'any_name',
           cnpj: '12.345.678/0001-90',
@@ -65,6 +69,8 @@ describe('Store Routes', () => {
 
   describe('PATCH /stores/:id', () => {
     test('Should return 204 on update store by Id', async () => {
+      const accessToken = makeAccessToken()
+
       const store = await StoreMongoModel.create({
         name: 'any_name',
         cnpj: '12.345.678/0001-90',
@@ -75,6 +81,7 @@ describe('Store Routes', () => {
 
       await request(app)
         .patch(`/api/v1/stores/${store._id.toString()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           name: 'updated_name',
           state: 'updated_state'
@@ -85,6 +92,8 @@ describe('Store Routes', () => {
 
   describe('DELETE /stores/:id', () => {
     test('Should return 204 on delete store by Id', async () => {
+      const accessToken = makeAccessToken()
+
       const store = await StoreMongoModel.create({
         name: 'any_name',
         cnpj: '12.345.678/0001-90',
@@ -95,6 +104,7 @@ describe('Store Routes', () => {
 
       await request(app)
         .delete(`/api/v1/stores/${store._id.toString()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .expect(204)
     })
   })
