@@ -29,6 +29,11 @@ interface PaginatedResponse {
   }
 }
 
+export interface WinnerAggregationByState {
+  state: string
+  count: number
+}
+
 export const winnerService = {
   async create(data: AddWinnerParams): Promise<Winner> {
     const response = await api.post<ApiResponse<Winner>>('/winners', data)
@@ -75,5 +80,10 @@ export const winnerService = {
 
   async delete(id: string): Promise<void> {
     await api.delete(`/winners/${id}`)
+  },
+
+  async getAggregationByState(): Promise<WinnerAggregationByState[]> {
+    const response = await api.get<ApiResponse<WinnerAggregationByState[]>>('/winners/aggregation')
+    return response.data.data
   }
 }
