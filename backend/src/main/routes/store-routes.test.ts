@@ -1,19 +1,19 @@
 import request from 'supertest'
 import app from '../config/app'
-import { mongoHelper } from '../../infra/mongoDB/helper/mongoHelper'
+import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../../infra/mongoDB/helper/test-helper'
 import { StoreMongoModel } from '../../infra/mongoDB/store/store-schema'
 
 describe('Store Routes', () => {
   beforeAll(async () => {
-    await mongoHelper.connect()
+    await connectToTestDatabase()
   })
 
   afterAll(async () => {
-    await mongoHelper.disconnect()
+    await disconnectFromTestDatabase()
   })
 
   beforeEach(async () => {
-    await StoreMongoModel.deleteMany({})
+    await clearTestDatabase()
   })
 
   describe('POST /stores', () => {

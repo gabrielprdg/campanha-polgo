@@ -1,5 +1,5 @@
 import { mockAddWinnerParams } from '../../../domain/test/mock-winner'
-import { mongoHelper } from '../helper/mongoHelper'
+import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../helper/test-helper'
 import { WinnerMongoRepository } from './winner-repository'
 import { WinnerMongoModel } from './winner-schema'
 
@@ -9,15 +9,15 @@ const makeSut = (): WinnerMongoRepository => {
 
 describe('Winner Mongo Repository', () => {
   beforeAll(async () => {
-    await mongoHelper.connect()
+    await connectToTestDatabase()
   })
 
   afterAll(async () => {
-    await mongoHelper.disconnect()
+    await disconnectFromTestDatabase()
   })
 
   beforeEach(async () => {
-    await WinnerMongoModel.deleteMany({})
+    await clearTestDatabase()
   })
 
   describe('add()', () => {

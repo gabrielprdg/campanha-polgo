@@ -25,20 +25,24 @@ describe('LoadWinners Controller', () => {
   test('Should call LoadWinners', async () => {
     const { sut, loadWinnersStub } = makeSut()
     const loadAllSpy = jest.spyOn(loadWinnersStub, 'loadAll')
-    await sut.handle()
+    await sut.handle({})
     expect(loadAllSpy).toHaveBeenCalled()
   })
 
   test('Should return 500 if LoadWinners throws', async () => {
     const { sut, loadWinnersStub } = makeSut()
     jest.spyOn(loadWinnersStub, 'loadAll').mockImplementationOnce(throwError)
-    const httpResponse = await sut.handle()
+    const httpResponse = await sut.handle({
+      
+    })
     expect(httpResponse).toEqual(serverError(new Error()))
   })
 
   test('Should return 200 with winners list on success', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.handle()
+    const httpResponse = await sut.handle({
+      
+    })
     expect(httpResponse).toEqual(ok([mockWinnerModel(), mockWinnerModel()]))
   })
 })

@@ -5,7 +5,6 @@ import { badRequest, created, serverError } from '../../../helpers/http/http-hel
 import { mockAddWinner, mockValidation } from '../../../test'
 import { HttpRequest, Validation } from '../../../protocols'
 import { AddWinnerController } from './add-winner-controller'
-import mockdate from 'mockdate'
 
 const makeFakeRequest = (): HttpRequest => ({
   body: {
@@ -36,14 +35,6 @@ const makeSut = (): SutTypes => {
 }
 
 describe('AddWinner Controller', () => {
-  beforeAll(() => {
-    mockdate.set(new Date())
-  })
-
-  afterAll(() => {
-    mockdate.reset()
-  })
-
   test('Should call Validation with correct values', async () => {
     const { sut, validationStub } = makeSut()
     const validateSpy = jest.spyOn(validationStub, 'validate')

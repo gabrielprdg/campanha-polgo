@@ -1,5 +1,5 @@
 import { mockAddStoreParams } from '../../../domain/test/mock-store'
-import { mongoHelper } from '../helper/mongoHelper'
+import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../helper/test-helper'
 import { StoreMongoRepository } from './store-repository'
 import { StoreMongoModel } from './store-schema'
 
@@ -9,15 +9,15 @@ const makeSut = (): StoreMongoRepository => {
 
 describe('Store Mongo Repository', () => {
   beforeAll(async () => {
-    await mongoHelper.connect()
+    await connectToTestDatabase()
   })
 
   afterAll(async () => {
-    await mongoHelper.disconnect()
+    await disconnectFromTestDatabase()
   })
 
   beforeEach(async () => {
-    await StoreMongoModel.deleteMany({})
+    await clearTestDatabase()
   })
 
   describe('add()', () => {

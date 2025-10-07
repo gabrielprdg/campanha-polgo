@@ -1,19 +1,19 @@
 import request from 'supertest'
 import app from '../config/app'
-import { mongoHelper } from '../../infra/mongoDB/helper/mongoHelper'
+import { connectToTestDatabase, disconnectFromTestDatabase, clearTestDatabase } from '../../infra/mongoDB/helper/test-helper'
 import { WinnerMongoModel } from '../../infra/mongoDB/winner/winner-schema'
 
 describe('Winner Routes', () => {
   beforeAll(async () => {
-    await mongoHelper.connect()
+    await connectToTestDatabase()
   })
 
   afterAll(async () => {
-    await mongoHelper.disconnect()
+    await disconnectFromTestDatabase()
   })
 
   beforeEach(async () => {
-    await WinnerMongoModel.deleteMany({})
+    await clearTestDatabase()
   })
 
   describe('POST /winners', () => {
