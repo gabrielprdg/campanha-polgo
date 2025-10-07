@@ -13,3 +13,5 @@ export const config = {
 
 export const isDevelopment = config.nodeEnv === 'development';
 export const isProduction = config.nodeEnv === 'production';
+
+export default config;

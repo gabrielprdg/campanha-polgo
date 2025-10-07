@@ -29,5 +29,15 @@ export default {
   }],
   paths,
   schemas,
-  components
+  components: {
+    ...components,
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT token de autenticação. Use o token gerado pelo administrador.'
+      }
+    }
+  }
 }

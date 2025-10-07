@@ -3,6 +3,9 @@ export const winnerPath = {
     tags: ['Ganhadores'],
     summary: 'API para cadastrar um novo ganhador',
     description: 'Cadastra um novo ganhador da campanha com os dados fornecidos',
+    security: [{
+      bearerAuth: []
+    }],
     requestBody: {
       required: true,
       content: {
@@ -26,6 +29,9 @@ export const winnerPath = {
       },
       400: {
         $ref: '#/components/badRequest'
+      },
+      401: {
+        $ref: '#/components/unauthorized'
       },
       500: {
         $ref: '#/components/serverError'
@@ -94,6 +100,9 @@ export const winnerByIdPath = {
     tags: ['Ganhadores'],
     summary: 'API para atualizar um ganhador',
     description: 'Atualiza os dados de um ganhador específico através do seu ID',
+    security: [{
+      bearerAuth: []
+    }],
     parameters: [{
       in: 'path',
       name: 'id',
@@ -150,6 +159,9 @@ export const winnerByIdPath = {
       400: {
         $ref: '#/components/badRequest'
       },
+      401: {
+        $ref: '#/components/unauthorized'
+      },
       404: {
         $ref: '#/components/notFound'
       },
@@ -162,6 +174,9 @@ export const winnerByIdPath = {
     tags: ['Ganhadores'],
     summary: 'API para deletar um ganhador',
     description: 'Remove um ganhador específico do sistema através do seu ID',
+    security: [{
+      bearerAuth: []
+    }],
     parameters: [{
       in: 'path',
       name: 'id',
@@ -174,6 +189,9 @@ export const winnerByIdPath = {
     responses: {
       204: {
         $ref: '#/components/noContent'
+      },
+      401: {
+        $ref: '#/components/unauthorized'
       },
       404: {
         $ref: '#/components/notFound'

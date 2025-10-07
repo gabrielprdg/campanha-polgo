@@ -3,6 +3,9 @@ export const storePath = {
     tags: ['Lojas'],
     summary: 'API para criar uma nova loja',
     description: 'Cria uma nova loja no sistema com os dados fornecidos',
+    security: [{
+      bearerAuth: []
+    }],
     requestBody: {
       required: true,
       content: {
@@ -26,6 +29,9 @@ export const storePath = {
       },
       400: {
         $ref: '#/components/badRequest'
+      },
+      401: {
+        $ref: '#/components/unauthorized'
       },
       500: {
         $ref: '#/components/serverError'
@@ -94,6 +100,9 @@ export const storeByIdPath = {
     tags: ['Lojas'],
     summary: 'API para atualizar uma loja',
     description: 'Atualiza os dados de uma loja específica através do seu ID',
+    security: [{
+      bearerAuth: []
+    }],
     parameters: [{
       in: 'path',
       name: 'id',
@@ -149,6 +158,9 @@ export const storeByIdPath = {
       400: {
         $ref: '#/components/badRequest'
       },
+      401: {
+        $ref: '#/components/unauthorized'
+      },
       404: {
         $ref: '#/components/notFound'
       },
@@ -161,6 +173,9 @@ export const storeByIdPath = {
     tags: ['Lojas'],
     summary: 'API para deletar uma loja',
     description: 'Remove uma loja específica do sistema através do seu ID',
+    security: [{
+      bearerAuth: []
+    }],
     parameters: [{
       in: 'path',
       name: 'id',
@@ -173,6 +188,9 @@ export const storeByIdPath = {
     responses: {
       204: {
         $ref: '#/components/noContent'
+      },
+      401: {
+        $ref: '#/components/unauthorized'
       },
       404: {
         $ref: '#/components/notFound'

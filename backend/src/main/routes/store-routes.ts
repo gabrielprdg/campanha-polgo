@@ -5,11 +5,12 @@ import { makeLoadStoresController } from '../factories/controllers/store/load-st
 import { makeLoadStoreByIdController } from '../factories/controllers/store/load-store-by-id/load-store-by-id-controller-factory'
 import { makeUpdateStoreByIdController } from '../factories/controllers/store/update-store-by-id/update-store-by-id-controller-factory'
 import { makeDeleteStoreByIdController } from '../factories/controllers/store/delete-store-by-id/delete-store-by-id-controller-factory'
+import { authMiddleware } from '../middlewares/auth-middleware'
 
 export default (router: Router): void => {
-  router.post('/stores', adaptRoute(makeAddStoreController()))
+  router.post('/stores', authMiddleware, adaptRoute(makeAddStoreController()))
   router.get('/stores', adaptRoute(makeLoadStoresController()))
   router.get('/stores/:id', adaptRoute(makeLoadStoreByIdController()))
-  router.patch('/stores/:id', adaptRoute(makeUpdateStoreByIdController()))
-  router.delete('/stores/:id', adaptRoute(makeDeleteStoreByIdController()))
+  router.patch('/stores/:id', authMiddleware, adaptRoute(makeUpdateStoreByIdController()))
+  router.delete('/stores/:id', authMiddleware, adaptRoute(makeDeleteStoreByIdController()))
 }
